@@ -3,18 +3,26 @@ import { CreateProductService } from "../../services/products/CreateProductServi
 
 export class CreateProductController{
     async handle(req: Request, res:Response){
-        const { name, price, description, banner, category_id } = req.body;
+        const { name, price, description, category_id } = req.body;
 
-        const createProductService = new CreateProductService();
+        if (!req.file) {
+            throw new Error("Upload inválido")
+        } else {
+            const createProductService = new CreateProductService();
 
-        const product = await createProductService.execute({
-            name,
-            price,
-            description,
-            banner,
-            category_id
-        });
+            const { filename: image } = req.file;
 
-        return res.json(product)
+    
+            const product = await createProductService.execute({
+                name,
+                price,
+                description,
+                image,
+                category_id
+            });
+    
+            return res.json(product)
+        }
+
     }
 }
